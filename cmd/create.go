@@ -73,6 +73,17 @@ if ! grep -q "` + machineID + `" /etc/fstab; then
   echo "$VOLUME_DEV /home/devpod ext4 discard,defaults,noatime 0 2" >> /etc/fstab
 fi
 
+# Ensure Docker starts AFTER the volume is mounted on boot.
+# Without this, Docker may start before fstab mounts complete,
+# creating a fresh data directory and losing all container state.
+mkdir -p /etc/systemd/system/docker.service.d
+cat > /etc/systemd/system/docker.service.d/mount-order.conf << SYSD
+[Unit]
+After=home-devpod.mount
+Requires=home-devpod.mount
+SYSD
+systemctl daemon-reload
+
 # Move docker data dir
 service docker stop
 cat > /etc/docker/daemon.json << EOF
