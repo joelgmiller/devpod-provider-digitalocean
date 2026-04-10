@@ -1,0 +1,137 @@
+name: digitalocean
+version: v0.1.0
+description: |-
+  DevPod on DigitalOcean (fixed: graceful shutdown)
+icon: https://devpod.sh/assets/digitalocean.svg
+optionGroups:
+  - options:
+      - DISK_SIZE
+      - DISK_IMAGE
+      - MACHINE_TYPE
+    name: "Digital Ocean options"
+  - options:
+      - AGENT_PATH
+      - AGENT_DATA_PATH
+      - INACTIVITY_TIMEOUT
+      - INJECT_DOCKER_CREDENTIALS
+      - INJECT_GIT_CREDENTIALS
+    name: "Agent options"
+options:
+  TOKEN:
+    description: The DigitalOcean token to use.
+    required: true
+    password: true
+    command: |-
+      if [ ! -z "${DIGITALOCEAN_TOKEN}" ]; then
+        echo ${DIGITALOCEAN_TOKEN}
+      elif [ ! -z "${DIGITALOCEAN_ACCESS_TOKEN}" ]; then
+        echo ${DIGITALOCEAN_ACCESS_TOKEN}
+      fi
+  REGION:
+    description: The digital ocean region to use. E.g. fra1
+    required: true
+    default: fra1
+    suggestions:
+      - ams2
+      - ams3
+      - blr1
+      - fra1
+      - lon1
+      - nyc1
+      - nyc2
+      - nyc3
+      - sfo1
+      - sfo2
+      - sfo3
+      - atl1
+      - sgp1
+      - tor1
+      - syd1
+  DISK_SIZE:
+    description: The disk size in GB.
+    default: "30"
+  DISK_IMAGE:
+    description: The disk image to use.
+    default: docker-20-04
+    suggestions:
+      - docker-20-04
+      - ubuntu-22-04-x64
+      - ubuntu-24-04-x64
+      - debian-12-x64
+  MACHINE_TYPE:
+    description: The machine type to use.
+    default: s-4vcpu-8gb
+    suggestions:
+      - s-1vcpu-2gb
+      - s-2vcpu-4gb
+      - s-4vcpu-8gb
+      - s-8vcpu-16gb
+      - c-2
+      - c-4
+      - c-8
+      - c-16
+      - c-32
+  INACTIVITY_TIMEOUT:
+    description: If defined, will automatically stop the VM after the inactivity period.
+    default: 10m
+  INJECT_GIT_CREDENTIALS:
+    description: "If DevPod should inject git credentials into the remote host."
+    default: "true"
+  INJECT_DOCKER_CREDENTIALS:
+    description: "If DevPod should inject docker credentials into the remote host."
+    default: "true"
+  AGENT_PATH:
+    description: The path where to inject the DevPod agent to.
+    default: /home/devpod/.devpod/devpod
+  AGENT_DATA_PATH:
+    description: The path where to store the agent data.
+    default: /home/devpod/.devpod/agent
+agent:
+  path: ${AGENT_PATH}
+  dataPath: ${AGENT_DATA_PATH}
+  inactivityTimeout: ${INACTIVITY_TIMEOUT}
+  injectGitCredentials: ${INJECT_GIT_CREDENTIALS}
+  injectDockerCredentials: ${INJECT_DOCKER_CREDENTIALS}
+  binaries:
+    DO_PROVIDER:
+      - os: linux
+        arch: amd64
+        path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-amd64
+        checksum: ef07e435d88e743a6b61b5078a0740fb3ff4011188d6c3a2bcdbd8b2cdc3e0b8
+      - os: linux
+        arch: arm64
+        path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-arm64
+        checksum: 3bdb8389e7bacfac2ed4c6010f7b7e62d2ae2b69125f74da12d88024bd677a0c
+  exec:
+    shutdown: |-
+      ${DO_PROVIDER} stop
+binaries:
+  DO_PROVIDER:
+    - os: linux
+      arch: amd64
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-amd64
+      checksum: ef07e435d88e743a6b61b5078a0740fb3ff4011188d6c3a2bcdbd8b2cdc3e0b8
+    - os: linux
+      arch: arm64
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-arm64
+      checksum: 3bdb8389e7bacfac2ed4c6010f7b7e62d2ae2b69125f74da12d88024bd677a0c
+    - os: darwin
+      arch: amd64
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-darwin-amd64
+      checksum: 585721b992d725ea753b9d8dfbf319ae521751f1d4fb116ed389d589bf612216
+    - os: darwin
+      arch: arm64
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-darwin-arm64
+      checksum: 31249df4f952160632643881ada3fc9da9bd5e149e5328e6bb82808eb5d7b0a0
+    - os: windows
+      arch: amd64
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-windows-amd64.exe
+      checksum: c36a902e787549602ea4be059c2af6de2db01d69fa77f2ddbc443c0cebfb5f15
+exec:
+  init: ${DO_PROVIDER} init
+  command: ${DO_PROVIDER} command
+  create: ${DO_PROVIDER} create
+  delete: ${DO_PROVIDER} delete
+  start: ${DO_PROVIDER} start
+  stop: ${DO_PROVIDER} stop
+  status: ${DO_PROVIDER} status
