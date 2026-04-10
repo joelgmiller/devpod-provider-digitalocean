@@ -21,12 +21,7 @@ options:
     description: The DigitalOcean token to use.
     required: true
     password: true
-    command: |-
-      if [ ! -z "${DIGITALOCEAN_TOKEN}" ]; then
-        echo ${DIGITALOCEAN_TOKEN}
-      elif [ ! -z "${DIGITALOCEAN_ACCESS_TOKEN}" ]; then
-        echo ${DIGITALOCEAN_ACCESS_TOKEN}
-      fi
+    command: "if [ ! -z \"${DIGITALOCEAN_TOKEN}\" ]; then echo ${DIGITALOCEAN_TOKEN}; elif [ ! -z \"${DIGITALOCEAN_ACCESS_TOKEN}\" ]; then echo ${DIGITALOCEAN_ACCESS_TOKEN}; fi"
   REGION:
     description: The digital ocean region to use. E.g. fra1
     required: true
