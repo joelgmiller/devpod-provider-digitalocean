@@ -80,7 +80,51 @@ func (d *DigitalOcean) Stop(ctx context.Context, name string) error {
 		return nil
 	}
 
-	_, err = d.client.Droplets.Delete(ctx, droplet.ID)
+	// Use shutdown (graceful) instead of delete to preserve Docker state.
+	// The original code called Droplets.Delete() which destroyed the droplet,
+	// causing Docker RWLayer corruption on restart because container metadata
+	// on the root disk was lost while the data volume retained stale references.
+	_, _, err = d.client.DropletActions.Shutdown(ctx, droplet.ID)
+	if err != nil {
+		return err
+	}
+
+	// Wait for the droplet to fully shut down
+	for i := 0; i < 30; i++ {
+		time.Sleep(2 * time.Second)
+		droplet, err = d.GetByName(ctx, name)
+		if err != nil {
+			return err
+		}
+		if droplet == nil || droplet.Status == "off" {
+			break
+		}
+	}
+
+	// If graceful shutdown didn't work, force power off
+	if droplet != nil && droplet.Status != "off" {
+		_, _, err = d.client.DropletActions.PowerOff(ctx, droplet.ID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (d *DigitalOcean) Start(ctx context.Context, name string) error {
+	droplet, err := d.GetByName(ctx, name)
+	if err != nil {
+		return err
+	} else if droplet == nil {
+		return fmt.Errorf("droplet %s not found", name)
+	}
+
+	if droplet.Status == "active" {
+		return nil
+	}
+
+	_, _, err = d.client.DropletActions.PowerOn(ctx, droplet.ID)
 	if err != nil {
 		return err
 	}
@@ -94,7 +138,7 @@ func (d *DigitalOcean) Status(ctx context.Context, name string) (client.Status, 
 	if err != nil {
 		return client.StatusNotFound, err
 	} else if droplet == nil {
-		// check if volume exists
+		// no droplet — check if volume exists (legacy: old provider deleted droplets on stop)
 		volume, err := d.volumeByName(ctx, name)
 		if err != nil {
 			return client.StatusNotFound, err
@@ -105,7 +149,11 @@ func (d *DigitalOcean) Status(ctx context.Context, name string) (client.Status, 
 		return client.StatusNotFound, nil
 	}
 
-	// is busy?
+	// droplet exists — check its state
+	if droplet.Status == "off" {
+		return client.StatusStopped, nil
+	}
+
 	if droplet.Status != "active" {
 		return client.StatusBusy, nil
 	}

@@ -34,6 +34,19 @@ func NewStartCmd() *cobra.Command {
 
 // Run runs the command logic
 func (cmd *StartCmd) Run(ctx context.Context, options *options.Options, log log.Logger) error {
+	do := digitalocean.NewDigitalOcean(options.Token)
+
+	// Check if droplet already exists (powered off) — if so, just power it on
+	droplet, err := do.GetByName(ctx, options.MachineID)
+	if err != nil {
+		return err
+	}
+
+	if droplet != nil {
+		return do.Start(ctx, options.MachineID)
+	}
+
+	// No existing droplet — create a new one
 	req, err := buildInstance(options)
 	if err != nil {
 		return err
@@ -44,5 +57,5 @@ func (cmd *StartCmd) Run(ctx context.Context, options *options.Options, log log.
 		return errors.Wrap(err, "parse disk size")
 	}
 
-	return digitalocean.NewDigitalOcean(options.Token).Create(ctx, req, diskSize)
+	return do.Create(ctx, req, diskSize)
 }
