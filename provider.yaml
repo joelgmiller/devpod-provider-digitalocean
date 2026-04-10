@@ -1,7 +1,7 @@
 name: digitalocean
-version: v0.1.0
+version: v0.2.0
 description: |-
-  DevPod on DigitalOcean (fixed: graceful shutdown)
+  DevPod on DigitalOcean (fixed: graceful shutdown, persistent mounts)
 icon: https://devpod.sh/assets/digitalocean.svg
 optionGroups:
   - options:
@@ -91,12 +91,12 @@ agent:
     DO_PROVIDER:
       - os: linux
         arch: amd64
-        path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-amd64
-        checksum: ef07e435d88e743a6b61b5078a0740fb3ff4011188d6c3a2bcdbd8b2cdc3e0b8
+        path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-linux-amd64
+        checksum: b809a79c7d7421ad50f0bc32c193da2ffbd0866be7e05f66daa52c9d43d04680
       - os: linux
         arch: arm64
-        path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-arm64
-        checksum: 3bdb8389e7bacfac2ed4c6010f7b7e62d2ae2b69125f74da12d88024bd677a0c
+        path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-linux-arm64
+        checksum: 683905656493f45cbdf52415de93dd1ecbd6b11c15acbff407a33471bb52ea3b
   exec:
     shutdown: |-
       ${DO_PROVIDER} stop
@@ -104,24 +104,24 @@ binaries:
   DO_PROVIDER:
     - os: linux
       arch: amd64
-      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-amd64
-      checksum: ef07e435d88e743a6b61b5078a0740fb3ff4011188d6c3a2bcdbd8b2cdc3e0b8
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-linux-amd64
+      checksum: b809a79c7d7421ad50f0bc32c193da2ffbd0866be7e05f66daa52c9d43d04680
     - os: linux
       arch: arm64
-      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-linux-arm64
-      checksum: 3bdb8389e7bacfac2ed4c6010f7b7e62d2ae2b69125f74da12d88024bd677a0c
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-linux-arm64
+      checksum: 683905656493f45cbdf52415de93dd1ecbd6b11c15acbff407a33471bb52ea3b
     - os: darwin
       arch: amd64
-      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-darwin-amd64
-      checksum: 585721b992d725ea753b9d8dfbf319ae521751f1d4fb116ed389d589bf612216
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-darwin-amd64
+      checksum: d20bec510b1be39a5a034fab44dffcca647bd8173db6035da9badf435d1b9269
     - os: darwin
       arch: arm64
-      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-darwin-arm64
-      checksum: 31249df4f952160632643881ada3fc9da9bd5e149e5328e6bb82808eb5d7b0a0
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-darwin-arm64
+      checksum: 8f6135996ecb889428097ad4aaa6b8f316fef021e746374215fa21d91011965b
     - os: windows
       arch: amd64
-      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.1.0/devpod-provider-digitalocean-windows-amd64.exe
-      checksum: c36a902e787549602ea4be059c2af6de2db01d69fa77f2ddbc443c0cebfb5f15
+      path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.2.0/devpod-provider-digitalocean-windows-amd64.exe
+      checksum: 120c4750e8fba73aefb7b1db2b4179d16f7ee30c1ef1cf4772c69f74b1af8faf
 exec:
   init: ${DO_PROVIDER} init
   command: ${DO_PROVIDER} command

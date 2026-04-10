@@ -63,9 +63,15 @@ func GetInjectKeypairScript(machineFolder, machineID string) (string, error) {
 
 	resultScript := `#!/bin/sh
 
-# Mount volume to home
+# Mount volume to home and persist across reboots via fstab
 mkdir -p /home/devpod
-mount -o discard,defaults,noatime /dev/disk/by-id/scsi-0DO_Volume_` + machineID + ` /home/devpod
+VOLUME_DEV="/dev/disk/by-id/scsi-0DO_Volume_` + machineID + `"
+mount -o discard,defaults,noatime "$VOLUME_DEV" /home/devpod
+
+# Add to fstab so the mount survives PowerOff/PowerOn cycles
+if ! grep -q "` + machineID + `" /etc/fstab; then
+  echo "$VOLUME_DEV /home/devpod ext4 discard,defaults,noatime 0 2" >> /etc/fstab
+fi
 
 # Move docker data dir
 service docker stop
@@ -83,7 +89,7 @@ fi
 service docker start
 
 # Create DevPod user and configure ssh
-useradd devpod -d /home/devpod
+useradd devpod -d /home/devpod 2>/dev/null || true
 if grep -q sudo /etc/groups; then
 	usermod -aG sudo devpod
 elif grep -q wheel /etc/groups; then
