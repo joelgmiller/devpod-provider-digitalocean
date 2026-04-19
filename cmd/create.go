@@ -50,7 +50,7 @@ func (cmd *CreateCmd) Run(ctx context.Context, options *options.Options, log log
 	return digitalocean.NewDigitalOcean(options.Token).Create(ctx, req, diskSize)
 }
 
-func GetInjectKeypairScript(machineFolder, machineID string) (string, error) {
+func GetInjectKeypairScript(machineFolder, machineID, gitlabToken string) (string, error) {
 	publicKeyBase, err := ssh.GetPublicKeyBase(machineFolder)
 	if err != nil {
 		return "", err
@@ -59,6 +59,21 @@ func GetInjectKeypairScript(machineFolder, machineID string) (string, error) {
 	publicKey, err := base64.StdEncoding.DecodeString(publicKeyBase)
 	if err != nil {
 		return "", err
+	}
+
+	// If a GitLab token was provided at provider-install time, persist it to
+	// /etc/environment so the DevPod agent (launched via SSH/PAM) inherits
+	// it and ${localEnv:GITLAB_TOKEN} in devcontainer.json resolves correctly
+	// at docker run time. End users launching workspaces on this provider
+	// never need to set the token themselves.
+	gitlabEnvStanza := ""
+	if gitlabToken != "" {
+		gitlabEnvStanza = `
+# Persist GITLAB_TOKEN for DevPod agent resolution of ${localEnv:GITLAB_TOKEN}
+if ! grep -q '^GITLAB_TOKEN=' /etc/environment; then
+  echo 'GITLAB_TOKEN=` + gitlabToken + `' >> /etc/environment
+fi
+`
 	}
 
 	resultScript := `#!/bin/sh
@@ -116,14 +131,14 @@ chown -R devpod:devpod /home/devpod/.ssh
 
 # Make sure we don't get limited
 ufw allow 22/tcp || true
-`
+` + gitlabEnvStanza
 
 	return resultScript, nil
 }
 
 func buildInstance(options *options.Options) (*godo.DropletCreateRequest, error) {
 	// generate ssh keys
-	userData, err := GetInjectKeypairScript(options.MachineFolder, options.MachineID)
+	userData, err := GetInjectKeypairScript(options.MachineFolder, options.MachineID, options.GitlabToken)
 	if err != nil {
 		return nil, err
 	}

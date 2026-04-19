@@ -14,6 +14,7 @@ type Options struct {
 	DiskSize    string
 	MachineType string
 	Token       string
+	GitlabToken string
 }
 
 func FromEnv(skipMachine bool) (*Options, error) {
@@ -54,6 +55,12 @@ func FromEnv(skipMachine bool) (*Options, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Optional — if set, the token is written to /etc/environment on the
+	// droplet at first boot so the DevPod agent (and anything on the machine)
+	// can resolve ${localEnv:GITLAB_TOKEN} in devcontainer.json. End users
+	// launching workspaces never see or set this.
+	retOptions.GitlabToken = os.Getenv("GITLAB_TOKEN")
 
 	return retOptions, nil
 }
