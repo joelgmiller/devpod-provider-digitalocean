@@ -101,11 +101,11 @@ agent:
       - os: linux
         arch: amd64
         path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-linux-amd64
-        checksum: 6f0c2bb0b24ded1c18ea99aebcc9deb6809777b85a3d0d28622b286909d04b6d
+        checksum: ##CHECKSUM_LINUX_AMD64##
       - os: linux
         arch: arm64
         path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-linux-arm64
-        checksum: 403aa7593305fe005e914bfbbe6dc450ff1c3e9c1ea9165f32c82ab1424cfdb4
+        checksum: ##CHECKSUM_LINUX_ARM64##
   exec:
     shutdown: |-
       ${DO_PROVIDER} stop
@@ -114,23 +114,23 @@ binaries:
     - os: linux
       arch: amd64
       path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-linux-amd64
-      checksum: 6f0c2bb0b24ded1c18ea99aebcc9deb6809777b85a3d0d28622b286909d04b6d
+      checksum: ##CHECKSUM_LINUX_AMD64##
     - os: linux
       arch: arm64
       path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-linux-arm64
-      checksum: 403aa7593305fe005e914bfbbe6dc450ff1c3e9c1ea9165f32c82ab1424cfdb4
+      checksum: ##CHECKSUM_LINUX_ARM64##
     - os: darwin
       arch: amd64
       path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-darwin-amd64
-      checksum: c462ff7ebe31406b2388caa1090dd733c5754d5abacaa77befb1f43ae1daf2fe
+      checksum: ##CHECKSUM_DARWIN_AMD64##
     - os: darwin
       arch: arm64
       path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-darwin-arm64
-      checksum: e0c3abbfa822398ad10f222182ec524983f557a84f8176bab5749c6effc07c29
+      checksum: ##CHECKSUM_DARWIN_ARM64##
     - os: windows
       arch: amd64
       path: https://github.com/joelgmiller/devpod-provider-digitalocean/releases/download/v0.4.0/devpod-provider-digitalocean-windows-amd64.exe
-      checksum: 586f20b9f2b11b54920b70f44b13a39adc9771f93a1e2918d2fef2553309d416
+      checksum: ##CHECKSUM_WINDOWS_AMD64##
 exec:
   init: ${DO_PROVIDER} init
   command: ${DO_PROVIDER} command
